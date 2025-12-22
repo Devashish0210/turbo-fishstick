@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
 
   return (
-    <div>
+    <div className="h-full">
       <Chat initialChatId={id} initialMessages={chatData?.messages || []} />
     </div>
   );

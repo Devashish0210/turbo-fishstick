@@ -14,7 +14,7 @@ const AppTopNavbar = ({ isAuthenticated = true }: { isAuthenticated?: boolean })
     <header className="shrink-0 p-4 border-b border-zinc-800 bg-[var(--color-bg-light)] dark:bg-[var(--color-bg-dark)]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {isAuthenticated && <SidebarToggle />}
+          {isAuthenticated}
           <Image
               src={`${STATIC_COPILOT_URL}/images/darklogo.png`}
               alt="FPA Intelligeni Logo"

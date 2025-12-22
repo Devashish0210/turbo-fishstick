@@ -467,7 +467,6 @@ export default function Chat({ initialChatId, initialMessages }: { initialChatId
           : "pr-4"
           }`}
         style={{
-          height: "calc(100vh - 100px)",
           width:
             isArtifactsPanelOpen && !isMobile
               ? `calc(100% - ${artifactsPanelWidth}px)`
@@ -477,7 +476,6 @@ export default function Chat({ initialChatId, initialMessages }: { initialChatId
         <div
           ref={chatContainerRef}
           className="flex-grow overflow-y-auto p-4 pb-0 mb-0"
-          style={{ maxHeight: "calc(100vh - 180px)" }}
         >
           {botMessages?.map((msg, index) => (
             <motion.div
@@ -569,7 +567,7 @@ export default function Chat({ initialChatId, initialMessages }: { initialChatId
         </div>
 
         {/* Input Field for the user to Chat */}
-        <div className="sticky bottom-0 w-full px-4 pb-4">
+        <div className="sticky bottom-0 w-full px-4 pb-4 bg-[var(--color-bg-dark)] border-t border-neutral-800">
       <AIInput
         input={input}
         handleInputChange={handleInputChange}

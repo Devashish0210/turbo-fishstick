@@ -1,118 +1,105 @@
 "use client";
 
-// Import necessary modules and components
-import React from "react";
+import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    useSidebar,
-} from '@/components/ui/sidebar';
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarRail,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { House, PlusCircle, SquareArrowOutUpRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { SidebarUserProfile } from "./SidebarUserProfile";
 import { FullScreenLoader } from "./FullScreenLoader";
-import "../app/globals.css";
-import { DropdownMenuSeparator } from "./ui/dropdown-menu";
-import Link from "next/link";
 import { SidebarChatHistory } from "./SidebarChatHistory";
+import { SidebarToggle } from "./SiderbarToggle";
 
-interface Chat {
-    id: string;
-    title: string;
-    createdAt: Date;
-}
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const router = useRouter();
+  const { setOpenMobile } = useSidebar();
+  const [isPending, startTransition] = React.useTransition();
+  const pathname = usePathname();
 
-export function AppSidebar() {
-    const router = useRouter();
-    const { setOpenMobile, state } = useSidebar();
-    const [isPending, startTransition] = React.useTransition();
-    const pathname = usePathname();
+  const handleNavigation = (href: string) => {
+    startTransition(() => {
+      router.push(href);
+    });
+  };
 
-    const isOpen = state === "expanded";
+  return (
+    <>
+      {isPending && <FullScreenLoader />}
+      <Sidebar collapsible="icon" className="border-r border-neutral-800 bg-[var(--color-bg-dark)] text-[var(--color-text-light)]" {...props}>
+        <SidebarHeader className="h-16 flex items-center justify-center border-neutral-800/50">
+        <SidebarToggle />
+           
+        </SidebarHeader>
 
-    const handleNavigation = (href: string) => {
-        startTransition(() => {
-            router.push(href);
-        });
-    };
+        <SidebarContent>
+          {/* Main Actions Group */}
+          <SidebarGroup>
+            <SidebarMenu>
+              {/* New Chat Button - Refactored to SidebarMenuButton for proper collapse behavior */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => handleNavigation("/")}
+                  tooltip="New Chat"
+                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 group-data-[collapsible=icon]:bg-transparent"
+                >
+                  <PlusCircle className="mr-2" />
+                  <span>New Chat</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
-    const handleNewChat = () => {
-        startTransition(() => {
-            router.push("/");
-        });
-    };
+              {/* Home Link */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Home">
+                  <Link href="https://www.microland.com/">
+                    <House />
+                    <span>Home</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
-    return (
-        <>
-            {isPending && <FullScreenLoader />}
-            <Sidebar
-                className={cn(
-                    "border-r border-neutral-800 scrollbar-hide bg-[var(--color-bg-dark)] text-[var(--color-text-light)]",
-                )}>
-                <SidebarHeader className="border-neutral-800 flex items-center justify-between px-2 py-2">
-                    {/* <SidebarUserProfile /> */}
-                </SidebarHeader>
-                <SidebarContent className="px-2 scrollbar-hide">
-                    <SidebarMenu className="flex flex-col gap-2 mt-2">
+              {/* Dashboards Link */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Dashboards">
+                  <Link href="https://ai.microland.com/copilot/insights/fusion/dashboards">
+                    <SquareArrowOutUpRight />
+                    <span>Dashboards</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
 
-                               <div className={cn("mb-4", !isOpen && "flex justify-center")}>
-        <Button
-          onClick={() => handleNavigation("/")}
-          className={cn(
-            "rounded-full transition-all group",
-            isOpen 
-              ? "w-full justify-start px-4 py-6 bg-neutral-800 text-neutral-300 hover:bg-neutral-700" 
-              : "w-10 h-10 p-0 bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center"
-          )}
-        >
-          <PlusCircle className={cn("h-5 w-5", isOpen && "mr-3")} />
-          {isOpen && <span className="text-sm font-medium">New Chat</span>}
-        </Button>
-      </div>
-      
+          {/* Recent Chats Group - Automatically hidden via CSS when collapsed if desired, or we rely on SidebarChatHistory structure */}
+          <SidebarGroup className="mt-4 group-data-[collapsible=icon]:hidden">
+             <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+             <SidebarGroupContent>
+                <SidebarChatHistory
+                  currentPath={pathname}
+                  setOpenMobile={setOpenMobile}
+                />
+             </SidebarGroupContent>
+          </SidebarGroup>
 
-                        <Link
-                            href="https://www.microland.com/"
-                            className={cn(
-                                "flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-full transition-all group",
-                                "hover:bg-neutral-800 text-neutral-300",
-                                !isOpen && "justify-center px-2"
-                            )}
-                        >
-                            <House className="h-5 w-5" />
-                            {isOpen && <span>Home</span>}
-                        </Link>
-                        <Link
-                            href="https://ai.microland.com/copilot/insights/fusion/dashboards"
-                            onClick={() => handleNavigation("https://ai.microland.com/copilot/insights/fusion/dashboards")}
-                            className={cn(
-                                "flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-full transition-all group",
-                                "hover:bg-neutral-800 text-neutral-300",
-                                !isOpen && "justify-center px-2"
-                            )}
-                        >
-                            <SquareArrowOutUpRight className="h-5 w-5" />
-                            {isOpen && <span>Dashboards</span>}
-                        </Link>
-                        {isOpen && (
-        <div className="mt-4 px-4">
-          <SidebarChatHistory
-            currentPath={pathname}
-            setOpenMobile={setOpenMobile}
-          />
-        </div>
-      )}
-                    </SidebarMenu>
-                </SidebarContent>
-                <SidebarFooter className="px-2 py-4">
-                    <SidebarUserProfile handleNavigation={handleNavigation} />
-                </SidebarFooter>
-            </Sidebar>
-        </>
-    );
+        </SidebarContent>
+
+        <SidebarFooter>
+          <SidebarUserProfile handleNavigation={handleNavigation} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    </>
+  );
 }
